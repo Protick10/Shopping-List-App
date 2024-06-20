@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pro.inc.shoppinglist.ui.theme.ShoppingListApp
 import pro.inc.shoppinglist.ui.theme.ShoppingListTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,28 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        var sItems by remember { mutableStateOf(mutableListOf<ShoppingListItem>()) }
-
-                        Button(onClick = { /*TODO*/ },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        ){
-                            Text("Add Item")
-                        }
-
-                        LazyColumn (
-                            modifier = Modifier.fillMaxSize().padding(16.dp)
-                        ){
-                            items(sItems){
-
-                            }
-
-                        }
-
-                    }
+                    ShoppingListApp()
                 }
             }
         }
@@ -65,12 +45,6 @@ class MainActivity : ComponentActivity() {
 
 }
 
-data class ShoppingListItem(
-    var id: Int,
-    var name: String,
-    var quantity: Int,
-    var isEditingmode: Boolean = false
-)
 
 
 
