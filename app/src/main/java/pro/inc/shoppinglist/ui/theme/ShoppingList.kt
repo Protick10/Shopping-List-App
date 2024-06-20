@@ -2,6 +2,7 @@ package pro.inc.shoppinglist.ui.theme
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,23 +77,57 @@ fun ShoppingListApp(){
 //        AlertDialog(onDismissRequest = {showDialog= false }, confirmButton = { /*TODO*/ }) {
 //            Text("Hello World!")
 //        }
-        AlertDialog(onDismissRequest = { showDialog = false}, confirmButton = {},
-            title = { Text("Add Shopping Item",
-                style = MaterialTheme.typography.headlineSmall
-                ) },
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Row (
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Button(onClick = {
+                        if (itemName.isNotBlank()){
+                            val newItem = ShoppingListItem(
+                                id = sItems.size + 1,
+                                name = itemName,
+                                quantity = itemQuantity.toInt()
+                            )
+                            sItems.add(newItem)
+                            showDialog = false
+                            itemName = ""
+                            itemQuantity = ""
+                        }
+                    }){
+                        Text("Add")
+                    }
+
+                    Button(onClick = { showDialog = false }){
+                        Text("Cancel")
+                    }
+                }
+            },
+            title = {
+                Text(
+                    "Add Shopping Item",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
 //            containerColor = MaterialTheme.colorScheme.surface,
             text = {
                 Column {
                     OutlinedTextField(value = itemName,
-                        onValueChange = { itemName = it},
+                        onValueChange = { itemName = it },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         label = { Text("Name") }
-                        )
+                    )
                     OutlinedTextField(value = itemQuantity,
-                        onValueChange = { itemQuantity = it},
+                        onValueChange = { itemQuantity = it },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         label = { Text("Quantity") }
 
                     )
@@ -101,7 +136,7 @@ fun ShoppingListApp(){
             containerColor = Color(0xFFB0BEC5).copy(alpha = 0.8f), // Ash color with transparency
 //            titleContentColor = MaterialTheme.colorScheme.onSurface,
 //            textContentColor = MaterialTheme.colorScheme.onSurface
-            )
+        )
 
 
 
