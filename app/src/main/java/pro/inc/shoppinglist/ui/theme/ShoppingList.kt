@@ -1,5 +1,7 @@
 package pro.inc.shoppinglist.ui.theme
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -62,6 +70,7 @@ fun ShoppingListApp(){
         ){
             items(sItems){
 
+                ShoppingListItem(it, {}, {})
             }
 
         }
@@ -75,13 +84,15 @@ fun ShoppingListApp(){
 //        }
 //
 //        AlertDialog(onDismissRequest = {showDialog= false }, confirmButton = { /*TODO*/ }) {
-//            Text("Hello World!")
-//        }
+////            Text("Hello World!")
+////        }
         AlertDialog(
             onDismissRequest = { showDialog = false },
             confirmButton = {
                 Row (
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Button(onClick = {
@@ -91,7 +102,7 @@ fun ShoppingListApp(){
                                 name = itemName,
                                 quantity = itemQuantity.toInt()
                             )
-                            sItems.add(newItem)
+                            sItems = (sItems + newItem).toMutableList()
                             showDialog = false
                             itemName = ""
                             itemQuantity = ""
@@ -142,3 +153,40 @@ fun ShoppingListApp(){
 
     }
 }
+
+
+@Composable
+fun ShoppingListItem(
+    item: ShoppingListItem,  // This is the item to be displayed
+    onEditClick: () -> Unit,  // This is the action to be performed when the edit button is clicked. It is a lambda function that takes no argument and returns nothing.
+    onDeleteClick: () -> Unit
+){
+    Row (
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .border(
+                border = BorderStroke(1.dp, Color.Cyan),
+                shape = RoundedCornerShape(20)
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Text(text = item.name, modifier = Modifier.padding(8.dp))
+        Text(text = "Qty: ${item.quantity.toString()}", modifier = Modifier.padding(8.dp))
+        Row (
+            modifier = Modifier.padding(8.dp)
+        ) {
+            IconButton(onClick = onEditClick) {
+
+                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+            }
+
+            IconButton(onClick = onDeleteClick) {
+
+                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+            }
+        }
+    }
+}
+
