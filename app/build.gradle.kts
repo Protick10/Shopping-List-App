@@ -51,6 +51,25 @@ android {
 
 dependencies {
 
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.maps.android:maps-compose:2.15.0")//location api access..can access goole maps and location services
+
+
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+
+
+
+    //network calls
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    //Json to Kotlin Object mapping..convert json file
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    //Image loading library
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
