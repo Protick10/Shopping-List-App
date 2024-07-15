@@ -1,5 +1,10 @@
 package pro.inc.shoppinglist.ui.theme
 
+import android.Manifest
+import android.content.Context
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +24,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,22 +42,81 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import pro.inc.shoppinglist.LocationUtils
+import pro.inc.shoppinglist.LocationViewModel
+import pro.inc.shoppinglist.MainActivity
 
 data class ShoppingListItem(
     var id: Int,
     var name: String,
     var quantity: Int,
-    var isEditingmode: Boolean = false
+    var isEditingmode: Boolean = false,
+    var address: String = ""
 )
 
 
 @Composable
-fun ShoppingListApp(){
+fun ShoppingListApp(
+    locationUtils: LocationUtils,
+    viewModel: LocationViewModel,
+    navController: NavController,
+    context: Context,
+    address: String
+){
 
     var sItems by remember { mutableStateOf(listOf<ShoppingListItem>()) }
     var showDialog by remember { mutableStateOf(false) }
     var itemName by remember { mutableStateOf("") }
     var itemQuantity by remember { mutableStateOf("") }
+
+
+    //So we're just going to create a request permission launcher. it will request for permission
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = {permissions ->
+            if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                &&
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
+
+                // permission granted. update the location
+                locationUtils.requestLocationUpdates(viewModel)  //So we're just requesting the location updates. so it will update our view model with the location.
+
+            }else{
+
+                // this is where we would show a rationale for why we need the location permission
+                // It will just hold information whether we should show the permission rationale.
+                //
+                //So the reason we want to have permission or not.
+                //
+                //So if we need to let the user know about our reasons why we want to have the permission, we need to
+                //
+                //give a good reason.
+                val rationaleRequired = ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as MainActivity,  //So basically we're just saying don't open this permission rationale inside of another screen, do it in the main activity
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as MainActivity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+
+                //So if we need to display why we need access, we're just going to display this.
+                if(rationaleRequired){
+                    Toast.makeText(context,
+                        "Location permission is required for this feature work",
+                        Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(context,
+                        "Location permission is required for this feature work. Please enable it in settings.",
+                        Toast.LENGTH_SHORT).show()
+                }
+
+            }
+
+        }
+    )
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -170,6 +235,25 @@ fun ShoppingListApp(){
                         label = { Text("Quantity") }
 
                     )
+                    Button(onClick = {
+                        if (locationUtils.hasLocationPermission(context)) {
+                            locationUtils.requestLocationUpdates(viewModel)
+                            navController.navigate("locationScreen"){
+                                this.launchSingleTop
+                            }
+                        }else{
+                            requestPermissionLauncher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                )
+                            )
+                        }
+                    }) {
+
+                        Text(text = "Address")
+
+                    }
                 }
             },
             containerColor = Color(0xFFB0BEC5).copy(alpha = 0.8f), // Ash color with transparency
@@ -249,8 +333,25 @@ fun ShoppingListItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ){
-        Text(text = item.name, modifier = Modifier.padding(8.dp))
-        Text(text = "Qty: ${item.quantity.toString()}", modifier = Modifier.padding(8.dp))
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .weight(1f)
+        ) {
+            Row {
+                Text(text = item.name, modifier = Modifier.padding(8.dp))
+                Text(text = "Qty: ${item.quantity.toString()}", modifier = Modifier.padding(8.dp))
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+
+                Icon(imageVector = Icons.Default.LocationOn, contentDescription = null)
+                Text(text = item.address, modifier = Modifier.padding(8.dp))
+
+            }
+        }
+
         Row (
             modifier = Modifier.padding(8.dp)
         ) {
