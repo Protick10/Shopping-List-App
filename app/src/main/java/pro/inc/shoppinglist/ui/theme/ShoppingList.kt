@@ -106,11 +106,11 @@ fun ShoppingListApp(
                 if(rationaleRequired){
                     Toast.makeText(context,
                         "Location permission is required for this feature work",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_LONG).show()
                 }else{
                     Toast.makeText(context,
                         "Location permission is required for this feature work. Please enable it in settings.",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -149,6 +149,7 @@ fun ShoppingListApp(
                         editedItem?.let {
                             it.name = editedName
                             it.quantity = editedQuantity
+                            it.address = address
                         }
                     })
 
@@ -193,7 +194,8 @@ fun ShoppingListApp(
                             val newItem = ShoppingListItem(
                                 id = sItems.size + 1,
                                 name = itemName,
-                                quantity = itemQuantity.toInt()
+                                quantity = itemQuantity.toInt(),
+                                address = address
                             )
                             sItems = (sItems + newItem)
                             showDialog = false
